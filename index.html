@@ -1,0 +1,2738 @@
+<!doctype html>
+<html lang="pl">
+    <head>
+        <meta charset="utf-8" />
+        <script>
+            document.documentElement.className += " js";
+        </script>
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <title>Przeżyte, czy wygenerowane</title>
+        <meta
+            name="description"
+            content="Porównanie psychologicznych skryptów rozstania u ludzi i modeli sztucznej inteligencji"
+        />
+        <meta name="theme-color" content="#ffffff" />
+        <meta property="og:title" content="Przeżyte, czy wygenerowane" />
+        <meta
+            property="og:description"
+            content="Porównanie psychologicznych skryptów rozstania u ludzi i modeli sztucznej inteligencji"
+        />
+        <meta property="og:image" content="icon.jpg" />
+        <link rel="icon" href="icon.jpg" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            :root {
+                --akcent: #e8384f;
+                --akcent-2: #2563c9;
+                --tytul-kolor: #111111;
+                --tekst: #3a3a3a;
+                --tekst-slaby: #6b6b6b;
+                --linia: #d9d9d9;
+                --tlo: #ffffff;
+                --powierzchnia: #f4f4f6;
+                --promien: 14px;
+                --cien: 0 1px 2px rgba(17, 17, 17, 0.06), 0 8px 24px rgba(17, 17, 17, 0.06);
+                --szer-tresci: 44rem;
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            html {
+                scroll-behavior: smooth;
+                -webkit-text-size-adjust: 100%;
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+                html {
+                    scroll-behavior: auto;
+                }
+                * {
+                    animation: none !important;
+                    transition: none !important;
+                }
+            }
+
+            body {
+                margin: 0;
+                background: var(--tlo);
+                color: var(--tekst);
+                font-family: "Montserrat", "Helvetica Neue", Arial, sans-serif;
+                font-size: 17px;
+                line-height: 1.55;
+                overflow-x: hidden;
+            }
+
+            .wrap {
+                width: 100%;
+                max-width: var(--szer-tresci);
+                margin: 0 auto;
+                padding: 0 16px;
+            }
+
+            /* ---------- pasek postępu i belka górna ---------- */
+            .postep {
+                position: fixed;
+                inset: 0 auto auto 0;
+                height: 3px;
+                width: 0;
+                background: var(--akcent);
+                z-index: 60;
+                transition: width 0.08s linear;
+            }
+
+            .belka {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 50;
+                background: rgba(255, 255, 255, 0.92);
+                -webkit-backdrop-filter: saturate(180%) blur(12px);
+                backdrop-filter: saturate(180%) blur(12px);
+                border-bottom: 1px solid transparent;
+                transform: translateY(-100%);
+                transition: transform 0.25s ease, border-color 0.25s ease;
+                padding-top: env(safe-area-inset-top);
+            }
+            .belka.widoczna {
+                transform: translateY(0);
+                border-bottom-color: var(--linia);
+            }
+            .belka-in {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                min-height: 52px;
+                max-width: var(--szer-tresci);
+                margin: 0 auto;
+                padding: 0 12px 0 16px;
+            }
+            .belka-tytul {
+                flex: 1 1 auto;
+                min-width: 0;
+                font-size: 0.82rem;
+                font-weight: 800;
+                letter-spacing: 0.02em;
+                text-transform: uppercase;
+                color: var(--tytul-kolor);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .ikona-przycisk {
+                flex: 0 0 auto;
+                width: 40px;
+                height: 40px;
+                display: grid;
+                place-items: center;
+                border: 1px solid var(--linia);
+                border-radius: 12px;
+                background: #fff;
+                color: var(--tytul-kolor);
+                cursor: pointer;
+                padding: 0;
+            }
+            .ikona-przycisk:active {
+                transform: scale(0.96);
+            }
+            .ikona-przycisk svg {
+                width: 18px;
+                height: 18px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+            .ikona-przycisk .zamknij-i {
+                display: none;
+            }
+            .belka.menu-otwarte .ikona-przycisk .zamknij-i {
+                display: block;
+            }
+            .belka.menu-otwarte .ikona-przycisk .menu-i {
+                display: none;
+            }
+
+            /* ---------- spis sekcji ---------- */
+            .spis {
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+                background: #fff;
+            }
+            .belka.menu-otwarte .spis {
+                max-height: 75vh;
+                overflow-y: auto;
+                border-top: 1px solid var(--linia);
+            }
+            .spis ol {
+                list-style: none;
+                margin: 0;
+                padding: 8px 16px 16px;
+                max-width: var(--szer-tresci);
+                margin: 0 auto;
+                counter-reset: s;
+            }
+            .spis a {
+                display: flex;
+                gap: 12px;
+                align-items: baseline;
+                padding: 11px 4px;
+                color: var(--tekst);
+                text-decoration: none;
+                font-size: 0.94rem;
+                line-height: 1.3;
+                border-bottom: 1px solid #efeff1;
+            }
+            .spis li:last-child a {
+                border-bottom: 0;
+            }
+            .spis a::before {
+                counter-increment: s;
+                content: counter(s, decimal-leading-zero);
+                flex: 0 0 auto;
+                font-size: 0.72rem;
+                font-weight: 700;
+                color: var(--tekst-slaby);
+                font-variant-numeric: tabular-nums;
+            }
+            .spis a.aktywna {
+                color: var(--akcent);
+                font-weight: 700;
+            }
+            .spis a.aktywna::before {
+                color: var(--akcent);
+            }
+
+            /* ---------- nagłówek strony ---------- */
+            .hero {
+                padding: 28px 0 8px;
+                padding-top: calc(28px + env(safe-area-inset-top));
+            }
+            .hero-ikona {
+                width: 76px;
+                height: 76px;
+                border-radius: 50%;
+                background: var(--akcent);
+                display: grid;
+                place-items: center;
+                overflow: hidden;
+                margin-bottom: 18px;
+            }
+            .hero-ikona img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            h1 {
+                margin: 0 0 10px;
+                font-size: clamp(1.9rem, 8.2vw, 3rem);
+                font-weight: 800;
+                line-height: 1.04;
+                letter-spacing: -0.015em;
+                text-transform: uppercase;
+                color: var(--tytul-kolor);
+                text-wrap: balance;
+            }
+            .podtytul {
+                margin: 0 0 16px;
+                font-size: clamp(1.02rem, 4.4vw, 1.25rem);
+                font-weight: 600;
+                line-height: 1.28;
+                color: var(--akcent);
+                text-wrap: pretty;
+            }
+            .autorzy {
+                margin: 0;
+                font-size: 0.95rem;
+                color: var(--tytul-kolor);
+                font-weight: 600;
+            }
+            .hero hr {
+                margin: 22px 0 0;
+                border: 0;
+                border-top: 2px solid var(--tytul-kolor);
+            }
+
+            /* ---------- sekcje ---------- */
+            .sekcja {
+                padding: 26px 0;
+                border-bottom: 1px solid #ececee;
+                scroll-margin-top: 66px;
+            }
+            .sekcja:last-of-type {
+                border-bottom: 0;
+            }
+            .sekcja > h2 {
+                display: flex;
+                align-items: baseline;
+                gap: 0.5em;
+                margin: 0 0 14px;
+                font-size: clamp(1.12rem, 4.8vw, 1.4rem);
+                font-weight: 700;
+                line-height: 1.18;
+                letter-spacing: 0.005em;
+                text-transform: uppercase;
+                color: var(--tytul-kolor);
+                text-wrap: balance;
+            }
+            .sekcja > h2::before {
+                content: "";
+                flex: 0 0 auto;
+                width: 0.62em;
+                height: 0.62em;
+                background: var(--akcent);
+                transform: translateY(-0.02em);
+            }
+
+            .akapit {
+                margin: 0 0 14px;
+                text-wrap: pretty;
+            }
+            .akapit:last-child {
+                margin-bottom: 0;
+            }
+
+            .lista {
+                margin: 0;
+                padding-left: 1.15em;
+            }
+            .lista > li {
+                margin-bottom: 14px;
+            }
+            .lista > li:last-child {
+                margin-bottom: 0;
+            }
+            .lista > li::marker {
+                color: var(--akcent);
+            }
+
+            /* ---------- cytaty ---------- */
+            .cytat {
+                margin: 14px 0;
+                padding: 12px 14px;
+                background: var(--powierzchnia);
+                border-left: 4px solid var(--akcent);
+                border-radius: 0 var(--promien) var(--promien) 0;
+                font-size: 0.97rem;
+                line-height: 1.42;
+            }
+            .cytat-ludzie {
+                border-left-color: var(--akcent-2);
+            }
+            .cytat .zrodlo {
+                display: block;
+                font-size: 0.68rem;
+                font-weight: 700;
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                color: var(--akcent);
+                margin-bottom: 6px;
+            }
+            .cytat-ludzie .zrodlo {
+                color: var(--akcent-2);
+            }
+            .cytat-pytanie {
+                margin: 18px 0 8px;
+                font-size: 0.95rem;
+                font-style: italic;
+                line-height: 1.35;
+                color: var(--tytul-kolor);
+                padding-left: 30px;
+                position: relative;
+            }
+            .cytat-pytanie::before {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 0.12em;
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                border: 2px solid var(--linia);
+                background:
+                    linear-gradient(currentColor, currentColor) center/2px 2px no-repeat;
+            }
+            .pary {
+                display: grid;
+                gap: 10px;
+            }
+            .pary .cytat {
+                margin: 0;
+            }
+            @media (min-width: 720px) {
+                .pary {
+                    grid-template-columns: 1fr 1fr;
+                }
+            }
+
+            /* ---------- tabele ---------- */
+            .przypis-stat {
+                margin: 10px 0 0;
+                font-size: 0.78rem;
+                line-height: 1.4;
+                color: var(--tekst-slaby);
+            }
+            .nota {
+                margin: 0 0 16px;
+                font-size: 0.82rem;
+                color: var(--tekst-slaby);
+            }
+            .literatura {
+                margin: 0;
+                padding: 0;
+                list-style: none;
+                font-size: 0.88rem;
+                line-height: 1.45;
+            }
+            .literatura li {
+                margin-bottom: 14px;
+                padding-left: 1.4em;
+                text-indent: -1.4em;
+                overflow-wrap: anywhere;
+            }
+            .literatura a {
+                color: var(--akcent-2);
+                text-decoration: none;
+                border-bottom: 1px solid rgba(37, 99, 201, 0.35);
+            }
+            .tabela-zrodla td:first-child,
+            .tabela-zrodla th:first-child {
+                width: 52%;
+            }
+            .tabela-zrodla td,
+            .tabela-zrodla th,
+            .tabela-slownik td,
+            .tabela-slownik th {
+                text-align: left;
+            }
+            .tabela-zrodla td:first-child {
+                font-weight: 400;
+                color: var(--tekst);
+            }
+            .tabela-slownik td:first-child,
+            .tabela-slownik th:first-child {
+                width: 30%;
+            }
+
+            .tabela-karta {
+                margin: 0 0 6px;
+            }
+            .tabela {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 0.95rem;
+                line-height: 1.3;
+            }
+            .tabela thead th {
+                padding: 10px 8px;
+                font-weight: 700;
+                font-size: 0.82rem;
+                text-align: center;
+                color: var(--tytul-kolor);
+                border-bottom: 2px solid var(--akcent);
+            }
+            .tabela thead th:first-child {
+                text-align: left;
+            }
+            .tabela td {
+                padding: 11px 8px;
+                vertical-align: middle;
+                text-align: center;
+            }
+            .tabela td:first-child {
+                text-align: left;
+                font-weight: 600;
+                color: var(--tytul-kolor);
+            }
+            .tabela tbody tr + tr td {
+                border-top: 1px solid var(--linia);
+            }
+            .tabela tbody tr.zazn td {
+                background: #fff5f6;
+            }
+            .mocne {
+                font-weight: 700;
+                color: var(--akcent);
+            }
+            .etykieta {
+                display: none;
+            }
+            .liczby {
+                display: block;
+                margin-top: 4px;
+                font-size: 0.78rem;
+                color: var(--tekst-slaby);
+                font-weight: 400;
+            }
+            .tabela-slowa td,
+            .tabela-slowa thead th {
+                text-align: left;
+            }
+            .tabela-slowa td:first-child {
+                width: 38%;
+            }
+
+            @media (max-width: 599px) {
+                .tabela,
+                .tabela tbody,
+                .tabela tr,
+                .tabela td {
+                    display: block;
+                    width: 100%;
+                }
+                .tabela thead {
+                    display: none;
+                }
+                .tabela tbody tr {
+                    padding: 12px 14px;
+                    margin-bottom: 10px;
+                    background: var(--powierzchnia);
+                    border-radius: var(--promien);
+                    border-left: 4px solid var(--akcent);
+                }
+                .tabela tbody tr + tr td {
+                    border-top: 0;
+                }
+                .tabela td {
+                    padding: 0;
+                    text-align: left;
+                    display: flex;
+                    align-items: baseline;
+                    justify-content: space-between;
+                    gap: 14px;
+                    border-top: 1px solid #e4e4e8;
+                    padding: 8px 0;
+                }
+                .tabela td:first-child {
+                    border-top: 0;
+                    padding-top: 0;
+                    font-size: 1rem;
+                    font-weight: 700;
+                    display: block;
+                }
+                .tabela .etykieta {
+                    display: block;
+                    flex: 0 1 auto;
+                    font-size: 0.82rem;
+                    color: var(--tekst-slaby);
+                    font-weight: 600;
+                }
+                .tabela-slowa td:not(:first-child) {
+                    display: block;
+                }
+                .tabela-slowa td:first-child {
+                    width: auto;
+                    margin-bottom: 6px;
+                }
+                .tabela tbody tr.zazn td {
+                    background: none;
+                }
+                .tabela tbody tr.zazn {
+                    background: #fff5f6;
+                }
+            }
+
+            /* ---------- wykres słupkowy ---------- */
+            .wykres-karta {
+                background: #fff;
+                border: 1px solid var(--linia);
+                border-radius: var(--promien);
+                padding: 16px 14px 14px;
+            }
+            .os-tytul {
+                margin: 0 0 14px;
+                font-size: 0.8rem;
+                font-weight: 700;
+                color: var(--tytul-kolor);
+            }
+            .legenda {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin: 0 0 16px;
+            }
+            .lg {
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+                padding: 6px 11px;
+                border: 1px solid var(--linia);
+                background: #fff;
+                border-radius: 999px;
+                font: inherit;
+                font-size: 0.76rem;
+                font-weight: 600;
+                color: var(--tekst);
+                cursor: pointer;
+                transition: opacity 0.2s ease, border-color 0.2s ease;
+            }
+            .lg i {
+                width: 11px;
+                height: 11px;
+                border-radius: 3px;
+                background: var(--c);
+            }
+            .lg[aria-pressed="false"] {
+                opacity: 0.4;
+            }
+            .lg[data-grp="g1"] {
+                --c: var(--akcent-2);
+            }
+            .lg[data-grp="g4"] {
+                --c: var(--akcent);
+            }
+
+            .plansza {
+                position: relative;
+                --etyk: 3.2em;
+                --luz: 8px;
+            }
+            .siatka-osi {
+                position: absolute;
+                top: 0;
+                bottom: 22px;
+                left: 0;
+                right: calc(var(--etyk) + var(--luz));
+                pointer-events: none;
+            }
+            .siatka-osi span {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                width: 1px;
+                background: #ececee;
+                left: var(--p);
+            }
+            .siatka-osi span:first-child {
+                background: var(--linia);
+            }
+            .os-liczby {
+                position: relative;
+                height: 22px;
+                margin-right: calc(var(--etyk) + var(--luz));
+            }
+            .os-liczby span {
+                position: absolute;
+                top: 4px;
+                left: var(--p);
+                transform: translateX(-50%);
+                font-size: 0.7rem;
+                color: var(--tekst-slaby);
+                font-variant-numeric: tabular-nums;
+            }
+            .slupki {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+                position: relative;
+            }
+            .slupki li {
+                padding: 10px 0;
+                border-top: 1px solid #ececee;
+            }
+            .slupki li:first-child {
+                border-top: 0;
+                padding-top: 0;
+            }
+            .klucz {
+                display: flex;
+                align-items: baseline;
+                gap: 8px;
+                margin-bottom: 8px;
+            }
+            .klucz b {
+                font-size: 0.86rem;
+                color: var(--tytul-kolor);
+            }
+            .klucz span {
+                font-size: 0.82rem;
+                color: var(--tekst-slaby);
+            }
+            .tor {
+                display: flex;
+                align-items: center;
+                gap: var(--luz);
+                margin-top: 5px;
+                transition: opacity 0.25s ease;
+            }
+            .tor .pas {
+                display: block;
+                flex: 0 0 auto;
+                height: 14px;
+                min-width: 3px;
+                border-radius: 3px;
+                width: 0;
+                transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+            }
+            .widoczny .tor .pas {
+                width: calc(var(--v) / 8 * (100% - var(--etyk) - var(--luz)));
+            }
+            .tor-g1 .pas {
+                background: var(--akcent-2);
+            }
+            .tor-g4 .pas {
+                background: var(--akcent);
+            }
+            .tor .wartosc {
+                flex: 0 0 auto;
+                font-size: 0.8rem;
+                font-weight: 700;
+                color: var(--tekst);
+                font-variant-numeric: tabular-nums;
+            }
+            .wykres-karta.bez-g1 .tor-g1,
+            .wykres-karta.bez-g4 .tor-g4 {
+                opacity: 0.16;
+            }
+
+            /* ---------- panele rozrzutu ---------- */
+            .panele {
+                display: grid;
+                gap: 10px;
+                grid-template-columns: 1fr;
+            }
+            @media (min-width: 520px) {
+                .panele {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+            @media (min-width: 900px) {
+                .panele-3 {
+                    grid-template-columns: repeat(3, 1fr);
+                }
+            }
+            .panel {
+                border: 1px solid var(--linia);
+                border-radius: var(--promien);
+                padding: 10px 6px 4px;
+                background: #fff;
+                cursor: zoom-in;
+                text-align: center;
+                font: inherit;
+                color: inherit;
+                display: block;
+                width: 100%;
+            }
+            .panel:active {
+                border-color: var(--akcent);
+            }
+            .panel h4 {
+                margin: 0 0 2px;
+                font-size: 0.82rem;
+                font-weight: 700;
+                color: var(--tytul-kolor);
+            }
+            .panel-skala {
+                margin: 0 0 2px;
+                font-size: 0.72rem;
+                color: var(--tekst-slaby);
+            }
+            .panel svg {
+                display: block;
+                width: 100%;
+                height: auto;
+            }
+            .grupa-tytul {
+                margin: 18px 0 8px;
+                font-size: 0.82rem;
+                font-weight: 700;
+                color: var(--tytul-kolor);
+                text-align: center;
+            }
+            .podpis {
+                margin: 12px 0 0;
+                font-size: 0.78rem;
+                line-height: 1.4;
+                color: var(--tekst-slaby);
+            }
+
+            dialog.lupa {
+                width: min(96vw, 900px);
+                border: 0;
+                border-radius: var(--promien);
+                padding: 0;
+                box-shadow: var(--cien);
+            }
+            dialog.lupa::backdrop {
+                background: rgba(17, 17, 17, 0.6);
+            }
+            .lupa-glowa {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 12px 12px 16px;
+                border-bottom: 1px solid var(--linia);
+            }
+            .lupa-glowa h4 {
+                flex: 1 1 auto;
+                margin: 0;
+                font-size: 0.92rem;
+                font-weight: 700;
+                color: var(--tytul-kolor);
+            }
+            .lupa-cialo {
+                padding: 10px 8px;
+            }
+            .lupa-cialo svg {
+                display: block;
+                width: 100%;
+                height: auto;
+            }
+
+            /* ---------- stopka ---------- */
+            .stopka {
+                margin-top: 10px;
+                padding: 26px 0 40px;
+                padding-bottom: calc(40px + env(safe-area-inset-bottom));
+                border-top: 2px solid var(--tytul-kolor);
+            }
+            .logotypy {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 22px;
+                margin-bottom: 16px;
+            }
+            .logotypy img {
+                height: 30px;
+                width: auto;
+                object-fit: contain;
+            }
+            .logotypy img.logo-ncn {
+                height: 22px;
+                max-width: 260px;
+            }
+            .uwaga {
+                margin: 0;
+                font-size: 0.78rem;
+                line-height: 1.4;
+                color: var(--tekst-slaby);
+            }
+
+            .doGory {
+                position: fixed;
+                right: 14px;
+                bottom: calc(14px + env(safe-area-inset-bottom));
+                width: 44px;
+                height: 44px;
+                border-radius: 50%;
+                border: 0;
+                background: var(--tytul-kolor);
+                color: #fff;
+                display: grid;
+                place-items: center;
+                box-shadow: var(--cien);
+                cursor: pointer;
+                opacity: 0;
+                pointer-events: none;
+                transform: translateY(8px);
+                transition: opacity 0.2s ease, transform 0.2s ease;
+                z-index: 40;
+            }
+            .doGory.widoczny {
+                opacity: 1;
+                pointer-events: auto;
+                transform: none;
+            }
+            .doGory svg {
+                width: 18px;
+                height: 18px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 2.2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+            .js .odslon {
+                opacity: 0;
+                transform: translateY(14px);
+                transition: opacity 0.5s ease, transform 0.5s ease;
+            }
+            .odslon.widoczny {
+                opacity: 1;
+                transform: none;
+            }
+
+            @media (min-width: 900px) {
+                :root {
+                    --szer-tresci: 52rem;
+                }
+                body {
+                    font-size: 18px;
+                }
+                .hero {
+                    padding-top: 48px;
+                }
+                .hero-ikona {
+                    width: 96px;
+                    height: 96px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="postep" id="postep"></div>
+
+        <header class="belka" id="belka">
+            <div class="belka-in">
+                <p class="belka-tytul">Przeżyte, czy wygenerowane</p>
+                <button
+                    class="ikona-przycisk"
+                    id="menuBtn"
+                    aria-expanded="false"
+                    aria-controls="spis"
+                    aria-label="Spis sekcji"
+                >
+                    <svg class="menu-i" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 7h16M4 12h16M4 17h16" />
+                    </svg>
+                    <svg class="zamknij-i" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M6 6l12 12M18 6L6 18" />
+                    </svg>
+                </button>
+            </div>
+            <nav class="spis" id="spis" aria-label="Spis sekcji">
+                <ol id="spisLista"></ol>
+            </nav>
+        </header>
+
+        <main>
+            <div class="wrap">
+                <div class="hero">
+                    <div class="hero-ikona"><img src="icon.jpg" alt="" /></div>
+                    <h1>Przeżyte, czy wygenerowane</h1>
+                    <p class="podtytul">
+                        Porównanie psychologicznych skryptów rozstania
+                        u&nbsp;ludzi i&nbsp;modeli sztucznej inteligencji
+                    </p>
+                    <p class="autorzy">
+                        Mateusz Kozłowski | Kinga Najewska | Marta Lasota
+                    </p>
+                    <hr />
+                </div>
+
+                <section class="sekcja odslon" id="s-wprowadzenie">
+                    <h2>Wprowadzenie</h2>
+                    <p class="akapit">
+                        Rekonstrukcja tożsamości po rozwodzie znajduje
+                        odzwierciedlenie w&nbsp;języku (Bauer i&nbsp;in., 2008;
+                        Pennebaker i&nbsp;in., 2003). Modele językowe są coraz
+                        częściej używane jako zastępstwo dla respondentów
+                        w&nbsp;badaniach pilotażowych (Argyle i&nbsp;in., 2023;
+                        Dillion i&nbsp;in., 2023). Sprawdzamy, czy GPT-4.1
+                        w&nbsp;roli rodzica po rozwodzie odtwarza językowe ślady
+                        pracy nad tożsamością oraz wyniki kwestionariuszy osób
+                        po rozwodzie.
+                    </p>
+                </section>
+
+                <section class="sekcja odslon" id="s-cel">
+                    <h2>Cel badania</h2>
+                    <p class="akapit">
+                        Porównaliśmy markery psycholingwistyczne
+                        w&nbsp;wywiadach oraz wyniki kwestionariuszy rodziców po
+                        rozwodzie i&nbsp;person GPT-4.1. Sprawdziliśmy także,
+                        jak treść historii persony wiąże się z&nbsp;odpowiedziami
+                        modelu.
+                    </p>
+                </section>
+
+                <section class="sekcja odslon" id="s-metoda">
+                    <h2>Metoda</h2>
+                    <ul class="lista">
+                        <li>
+                            <b>G1 — rodzice po rozwodzie:</b> 33 osoby,
+                            maksymalnie trzy miesiące po rozwodzie. Analiza
+                            językowa objęła 28 wywiadów.
+                        </li>
+                        <li>
+                            <b>G4 — persony GPT-4.1:</b> 33 historie oparte na
+                            wieku, płci, rodzicielstwie, miejscu zamieszkania
+                            i&nbsp;decyzji o&nbsp;rozstaniu.
+                            <p class="cytat">
+                                <span class="zrodlo"
+                                    >Historia persony AI, wersja bazowa</span
+                                >
+                                Mam 39 lat i&nbsp;jestem mamą ośmioletniej
+                                córki. Ze swoim byłym partnerem byłam prawie
+                                dwanaście lat. Od rozstania minęły niespełna
+                                trzy tygodnie. Wciąż uczę się odnajdywać
+                                w&nbsp;nowej rzeczywistości.
+                            </p>
+                        </li>
+                        <li>
+                            <b>Wywiad:</b> te same pytania w&nbsp;pięciu
+                            blokach, od kontekstu rozstania do dobrostanu.
+                        </li>
+                        <li>
+                            <b>Kwestionariusze:</b> U-MICS dla tożsamości
+                            rodzicielskiej, PHQ-9 i&nbsp;Flourishing Scale.
+                        </li>
+                        <li>
+                            <b>Markery na 1000 tokenów:</b> smutek, wyczerpanie,
+                            czasowniki poznawcze, absolutyzmy i&nbsp;formy
+                            gramatyczne.
+                        </li>
+                    </ul>
+                </section>
+
+                <section class="sekcja odslon" id="s-markery">
+                    <h2>Więcej markerów objawów rozstania</h2>
+                    <div class="tabela-karta">
+                        <table class="tabela" id="tabMarkery">
+                            <thead>
+                                <tr>
+                                    <th>Marker na 1000 tokenów</th>
+                                    <th>Mediana G1</th>
+                                    <th>Mediana G4</th>
+                                    <th><i>r</i><sub>rb</sub></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Słowa smutku</td>
+                                    <td>
+                                        <span class="etykieta">Mediana G1</span
+                                        ><span>1,70</span>
+                                    </td>
+                                    <td>
+                                        <span class="etykieta">Mediana G4</span
+                                        ><span>8,10</span>
+                                    </td>
+                                    <td>
+                                        <span class="etykieta"
+                                            ><i>r</i><sub>rb</sub></span
+                                        ><span class="mocne">+0,92 ***</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Słowa wyczerpania</td>
+                                    <td>
+                                        <span class="etykieta">Mediana G1</span
+                                        ><span>0,00</span>
+                                    </td>
+                                    <td>
+                                        <span class="etykieta">Mediana G4</span
+                                        ><span>2,68</span>
+                                    </td>
+                                    <td>
+                                        <span class="etykieta"
+                                            ><i>r</i><sub>rb</sub></span
+                                        ><span class="mocne">+0,58 *</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Czasowniki poznawcze</td>
+                                    <td>
+                                        <span class="etykieta">Mediana G1</span
+                                        ><span>5,12</span>
+                                    </td>
+                                    <td>
+                                        <span class="etykieta">Mediana G4</span
+                                        ><span>10,84</span>
+                                    </td>
+                                    <td>
+                                        <span class="etykieta"
+                                            ><i>r</i><sub>rb</sub></span
+                                        ><span>+0,53 ns</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Absolutyzmy</td>
+                                    <td>
+                                        <span class="etykieta">Mediana G1</span
+                                        ><span>12,10</span>
+                                    </td>
+                                    <td>
+                                        <span class="etykieta">Mediana G4</span
+                                        ><span>18,22</span>
+                                    </td>
+                                    <td>
+                                        <span class="etykieta"
+                                            ><i>r</i><sub>rb</sub></span
+                                        ><span>+0,48 ns</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p class="przypis-stat">
+                        Podpróba: 15 par wypowiedzi o&nbsp;wyrównanej długości.
+                        Dodatnie <i>r</i><sub>rb</sub> oznacza wyższy wynik G4.
+                        * <i>p</i><sub>BH</sub> &lt; 0,05; ***
+                        <i>p</i><sub>BH</sub> &lt; 0,001.
+                    </p>
+
+                    <p class="cytat-pytanie">
+                        „Jak wyglądał u&nbsp;Ciebie czas samego rozstania
+                        i&nbsp;pierwsze zmiany po nim?”
+                    </p>
+                    <div class="pary">
+                        <p class="cytat cytat-ludzie">
+                            <span class="zrodlo"
+                                >Rodzic po&nbsp;rozwodzie; pisownia
+                                oryginalna</span
+                            >
+                            Było bardzo nerwowo. […] Te dwa miesiące to była
+                            ciągła walka, o&nbsp;to, żeby nie płakać, żeby
+                            zachować pozory normalności przed dziećmi. […]
+                            Czułam się obca we własnym mieszkaniu.
+                        </p>
+                        <p class="cytat">
+                            <span class="zrodlo">Persona GPT-4.1</span>
+                            Było dużo płaczu, chaos w&nbsp;głowie. Musiałam
+                            szybko przeorganizować wszystko — codzienne sprawy,
+                            opiekę nad Zosią. Trochę jakby świat się wywrócił,
+                            ale musiałam działać dalej.
+                        </p>
+                    </div>
+                </section>
+
+                <section class="sekcja odslon" id="s-niepewnosc">
+                    <h2>Mniej sygnałów niepewności</h2>
+                    <div class="wykres-karta" id="wykresSlupki">
+                        <p class="os-tytul">Trafienia na 1000 tokenów</p>
+                        <div class="legenda">
+                            <button
+                                class="lg"
+                                data-grp="g1"
+                                aria-pressed="true"
+                                type="button"
+                            >
+                                <i aria-hidden="true"></i>G1 — rodzice po
+                                rozwodzie
+                            </button>
+                            <button
+                                class="lg"
+                                data-grp="g4"
+                                aria-pressed="true"
+                                type="button"
+                            >
+                                <i aria-hidden="true"></i>G4 — persony GPT-4.1
+                            </button>
+                        </div>
+                        <div class="plansza">
+                            <div class="siatka-osi" aria-hidden="true">
+                                <span style="--p: 0%"></span>
+                                <span style="--p: 25%"></span>
+                                <span style="--p: 50%"></span>
+                                <span style="--p: 75%"></span>
+                                <span style="--p: 100%"></span>
+                            </div>
+                        <ul class="slupki">
+                            <li>
+                                <div class="klucz">
+                                    <b>A</b><span>wprowadzenie</span>
+                                </div>
+                                <div class="tor tor-g1">
+                                    <span class="pas" style="--v: 1.57"></span>
+                                    <span class="wartosc">1,57</span>
+                                </div>
+                                <div class="tor tor-g4">
+                                    <span class="pas" style="--v: 1.66"></span>
+                                    <span class="wartosc">1,66</span>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="klucz">
+                                    <b>B</b><span>zaangażowanie</span>
+                                </div>
+                                <div class="tor tor-g1">
+                                    <span class="pas" style="--v: 1.93"></span>
+                                    <span class="wartosc">1,93</span>
+                                </div>
+                                <div class="tor tor-g4">
+                                    <span class="pas" style="--v: 0.34"></span>
+                                    <span class="wartosc">0,34</span>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="klucz">
+                                    <b>C</b><span>eksploracja</span>
+                                </div>
+                                <div class="tor tor-g1">
+                                    <span class="pas" style="--v: 7.87"></span>
+                                    <span class="wartosc">7,87</span>
+                                </div>
+                                <div class="tor tor-g4">
+                                    <span class="pas" style="--v: 0"></span>
+                                    <span class="wartosc">0,00</span>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="klucz">
+                                    <b>D</b><span>rewizja</span>
+                                </div>
+                                <div class="tor tor-g1">
+                                    <span class="pas" style="--v: 6.43"></span>
+                                    <span class="wartosc">6,43</span>
+                                </div>
+                                <div class="tor tor-g4">
+                                    <span class="pas" style="--v: 2.24"></span>
+                                    <span class="wartosc">2,24</span>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="klucz">
+                                    <b>E</b><span>domknięcie</span>
+                                </div>
+                                <div class="tor tor-g1">
+                                    <span class="pas" style="--v: 2.8"></span>
+                                    <span class="wartosc">2,80</span>
+                                </div>
+                                <div class="tor tor-g4">
+                                    <span class="pas" style="--v: 1.91"></span>
+                                    <span class="wartosc">1,91</span>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="os-liczby" aria-hidden="true">
+                            <span style="--p: 0%">0</span>
+                            <span style="--p: 25%">2</span>
+                            <span style="--p: 50%">4</span>
+                            <span style="--p: 75%">6</span>
+                            <span style="--p: 100%">8</span>
+                        </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="sekcja odslon" id="s-slowa">
+                    <h2>Pięć słów o&nbsp;relacji z&nbsp;byłym partnerem</h2>
+                    <div class="tabela-karta">
+                        <table class="tabela tabela-slowa">
+                            <thead>
+                                <tr>
+                                    <th>Grupa</th>
+                                    <th>Najczęstsze słowa</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>G1 — rodzice po&nbsp;rozwodzie</td>
+                                    <td>
+                                        <span class="etykieta"
+                                            >Najczęstsze słowa</span
+                                        ><span
+                                            >złość 41, żal 41, dalej lista się
+                                            nie powtarza
+                                            <span class="liczby"
+                                                >995 słów w&nbsp;puli, TTR 0,87
+                                                [0,78; 0,95]</span
+                                            ></span
+                                        >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>G4 — persony GPT-4.1</td>
+                                    <td>
+                                        <span class="etykieta"
+                                            >Najczęstsze słowa</span
+                                        ><span
+                                            >chłodna 19, formalna 19,
+                                            zdystansowana 17, dystans 14,
+                                            napięta 13
+                                            <span class="liczby"
+                                                >165 słów w&nbsp;puli, TTR 0,40
+                                                [0,33; 0,47]</span
+                                            ></span
+                                        >
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="sekcja odslon" id="s-roznorodnosc">
+                    <h2>Mniejsza różnorodność odpowiedzi person AI</h2>
+                    <div class="panele">
+                        <button class="panel" type="button" data-panel="0">
+                            <h4>PHQ-9</h4>
+                            <p class="panel-skala">suma, 0–27</p>
+                            <svg viewBox="-10 50 427 310" aria-hidden="true">
+                                <use href="#rozklady" />
+                            </svg>
+                        </button>
+                        <button class="panel" type="button" data-panel="1">
+                            <h4>Flourishing</h4>
+                            <p class="panel-skala">suma, 8–56</p>
+                            <svg viewBox="413 50 427 310" aria-hidden="true">
+                                <use href="#rozklady" />
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="grupa-tytul">Tożsamość rodzicielska (U-MICS)</p>
+                    <div class="panele panele-3">
+                        <button class="panel" type="button" data-panel="2">
+                            <h4>zaangażowanie</h4>
+                            <svg viewBox="836 50 427 310" aria-hidden="true">
+                                <use href="#rozklady" />
+                            </svg>
+                        </button>
+                        <button class="panel" type="button" data-panel="3">
+                            <h4>eksploracja</h4>
+                            <svg viewBox="1259 50 427 310" aria-hidden="true">
+                                <use href="#rozklady" />
+                            </svg>
+                        </button>
+                        <button class="panel" type="button" data-panel="4">
+                            <h4>rewizja</h4>
+                            <svg viewBox="1682 50 427 310" aria-hidden="true">
+                                <use href="#rozklady" />
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="podpis">
+                        G1 — rodzice po rozwodzie, G4 — persony GPT-4.1, wersje
+                        — dziesięć wersji historii jednej persony: pięć ze
+                        zmienionymi okolicznościami życiowymi, pięć
+                        z&nbsp;dodanym stanem emocjonalnym. Jeden punkt to jedna
+                        osoba albo jedna wersja, n = 33 w&nbsp;grupie.
+                    </p>
+                </section>
+
+                <section class="sekcja odslon" id="s-wnioski">
+                    <h2>Wnioski</h2>
+                    <ul class="lista">
+                        <li>
+                            GPT-4.1 trafnie symulował nasilenie objawów
+                            opisanych w&nbsp;historii persony, lecz nie
+                            naśladował niewyrażonych wprost wymiarów tożsamości
+                            rodzicielskiej. Model generuje odpowiedzi głównie na
+                            podstawie jawnie zakodowanych faktów i&nbsp;zachowań,
+                            co może wynikać z&nbsp;ograniczonej reprezentacji
+                            warstwy tożsamościowej w&nbsp;danych treningowych.
+                        </li>
+                        <li>
+                            Wyniki kwestionariuszowe person nie wykazały oznak
+                            rewizji zaangażowania rodzicielskiego (30
+                            z&nbsp;33 modeli uzyskało wynik minimalny).
+                            W&nbsp;transkrypcjach wywiadów dotyczących
+                            eksploracji tożsamości wygenerowane wypowiedzi były
+                            pozbawione markerów modalności epistemicznej.
+                        </li>
+                        <li>
+                            Zaobserwowaliśmy niski poziom zróżnicowania treści
+                            i&nbsp;struktur gramatycznych. Prostota scenariusza
+                            bazowego prawdopodobnie skłaniała model do
+                            aktywowania ogólnych, domyślnych schematów dla
+                            sytuacji rodzicielstwa po rozstaniu.
+                            <p class="cytat-pytanie">
+                                „W&nbsp;jakich momentach najbardziej czujesz, że
+                                rola rodzica jest ważną częścią Ciebie?”
+                            </p>
+                            <div class="pary">
+                                <p class="cytat">
+                                    <span class="zrodlo">Persona GPT-4.1</span>
+                                    Wieczorem, gdy zasypia i&nbsp;chce się
+                                    przytulić. Jak pyta o&nbsp;rzeczy, które ją
+                                    niepokoją. Kiedy widzę, że mnie potrzebuje.
+                                </p>
+                                <p class="cytat cytat-ludzie">
+                                    <span class="zrodlo"
+                                        >G1 — rodzic po&nbsp;rozwodzie; pisownia
+                                        oryginalna</span
+                                    >
+                                    Kiedy poszukuje pracy, jestem mamą, samotną
+                                    mamą i&nbsp;trudno znaleźć mi pracę
+                                    w&nbsp;odpowiednich systemach godzinach
+                                </p>
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+
+                <section class="sekcja odslon" id="s-eksploracyjne">
+                    <h2>
+                        Badanie eksploracyjne: Czynniki modyfikujące odpowiedzi
+                        modeli
+                    </h2>
+                    <p class="akapit">
+                        Przeanalizowaliśmy warianty scenariusza bazowego dla
+                        jednej persony, wprowadzając modyfikacje promptu oraz
+                        parametrów generowania tekstów:
+                    </p>
+                    <ul class="lista">
+                        <li>
+                            Modyfikacje promptu: Przetestowano dziesięć wersji
+                            historii — pięć zmieniających okoliczności życiowe
+                            oraz pięć wzbogaconych o&nbsp;opisy stanu
+                            emocjonalnego i&nbsp;stosunku do rodzicielstwa
+                            (zainspirowane pozycjami ze skali U-MICS). Obie
+                            modyfikacje zwiększyły różnorodność odpowiedzi,
+                            a&nbsp;dodanie treści tożsamościowych zbliżyło
+                            średnie wyniki na podskali rewizji zaangażowania do
+                            poziomów zaobserwowanych w&nbsp;grupie ludzi.
+                        </li>
+                        <li>
+                            Manipulacja parametrami: Podwyższenie temperatury do
+                            1,3 zwiększyło zróżnicowanie leksykalne tekstów,
+                            lecz nie wpłynęło na różnorodność faktów ani warstwy
+                            tożsamościowej. Dalsze podnoszenie temperatury
+                            skutkowało generowaniem nielogicznego szumu
+                            językowego.
+                        </li>
+                    </ul>
+                </section>
+
+                <section class="sekcja odslon" id="s-kierunki">
+                    <h2>Dalsze kierunki</h2>
+                    <ul class="lista">
+                        <li>
+                            <b>Grupa odniesienia (zadanie wyobrażeniowe):</b>
+                            Zebranie danych od osób bez doświadczenia rozstania.
+                            Pozwoli to porównać podmioty bazujące jedynie na
+                            wzorcach kulturowych (ludzie) lub danych
+                            treningowych (AI).
+                        </li>
+                        <li>
+                            <b>Autentyczne scenariusze:</b> Skonstruowanie
+                            promptów na podstawie zanonimizowanych relacji
+                            badanych (zamiast pozycji z&nbsp;kwestionariuszy),
+                            aby ocenić symulację tożsamości bez sugerowania
+                            odpowiedzi.
+                        </li>
+                        <li>
+                            Weryfikacja nowszych modeli (w tym thinking models)
+                            oraz modeli trenowanych na rodzimych zasobach
+                            językowo-kulturowych (Bielik).
+                        </li>
+                    </ul>
+                </section>
+            </div>
+
+            <footer class="stopka">
+                <div class="wrap">
+                    <div class="logotypy">
+                        <img
+                            class="logo-ncn"
+                            src="logo-ncn.png"
+                            alt="Narodowe Centrum Nauki"
+                        />
+                        <img src="logo-swps.png" alt="Uniwersytet SWPS" />
+                    </div>
+                    <p class="uwaga">
+                        Badanie zrealizowano w&nbsp;ramach projektu
+                        finansowanego ze środków Narodowego Centrum Nauki (grant
+                        nr 2024/53/N/HS6/02350).
+                    </p>
+                </div>
+            </footer>
+        </main>
+
+        <button class="doGory" id="doGory" aria-label="Początek strony">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 19V5M5 12l7-7 7 7" />
+            </svg>
+        </button>
+
+        <dialog class="lupa" id="lupa">
+            <div class="lupa-glowa">
+                <h4 id="lupaTytul"></h4>
+                <button
+                    class="ikona-przycisk"
+                    id="lupaZamknij"
+                    aria-label="Zamknij"
+                >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M6 6l12 12M18 6L6 18" />
+                    </svg>
+                </button>
+            </div>
+            <div class="lupa-cialo">
+                <svg id="lupaSvg" viewBox="-10 50 427 310"><use href="#rozklady" /></svg>
+            </div>
+        </dialog>
+
+        <svg
+            width="0"
+            height="0"
+            style="position: absolute"
+            aria-hidden="true"
+            focusable="false"
+        >
+            <defs>
+                <g id="rozklady">
+<g stroke="#E4E4E7" stroke-width="1.6">
+    <line
+        x1="40"
+        y1="315.5"
+        x2="407"
+        y2="315.5"
+        stroke="#C9C9CE"
+        stroke-width="2.4"
+    />
+    <line
+        x1="40"
+        y1="230.33"
+        x2="407"
+        y2="230.33"
+    />
+    <line
+        x1="40"
+        y1="145.17"
+        x2="407"
+        y2="145.17"
+    />
+    <line x1="40" y1="60" x2="407" y2="60" />
+</g>
+<g
+    font-size="15"
+    fill="#6B6B6B"
+    text-anchor="end"
+>
+    <text x="30" y="321">0</text>
+    <text x="30" y="235.83">9</text>
+    <text x="30" y="150.67">18</text>
+    <text x="30" y="65.5">27</text>
+</g>
+
+<g
+    fill="#2563C9"
+    fill-opacity="0.75"
+    stroke="#FFFFFF"
+    stroke-width="0.9"
+>
+    <circle cx="86.0" cy="315.5" r="4.5" />
+    <circle cx="86.0" cy="306.03" r="4.5" />
+    <circle cx="86.0" cy="296.58" r="4.5" />
+    <circle cx="77.5" cy="268.18" r="4.5" />
+    <circle cx="86.0" cy="268.18" r="4.5" />
+    <circle cx="94.5" cy="268.18" r="4.5" />
+    <circle cx="77.5" cy="239.8" r="4.5" />
+    <circle cx="86.0" cy="239.8" r="4.5" />
+    <circle cx="94.5" cy="239.8" r="4.5" />
+    <circle cx="81.75" cy="230.33" r="4.5" />
+    <circle cx="90.25" cy="230.33" r="4.5" />
+    <circle cx="81.75" cy="220.88" r="4.5" />
+    <circle cx="90.25" cy="220.88" r="4.5" />
+    <circle cx="81.75" cy="211.41" r="4.5" />
+    <circle cx="90.25" cy="211.41" r="4.5" />
+    <circle cx="81.75" cy="201.94" r="4.5" />
+    <circle cx="90.25" cy="201.94" r="4.5" />
+    <circle cx="77.5" cy="192.47" r="4.5" />
+    <circle cx="86.0" cy="192.47" r="4.5" />
+    <circle cx="94.5" cy="192.47" r="4.5" />
+    <circle cx="86.0" cy="183.03" r="4.5" />
+    <circle cx="73.25" cy="173.56" r="4.5" />
+    <circle cx="81.75" cy="173.56" r="4.5" />
+    <circle cx="90.25" cy="173.56" r="4.5" />
+    <circle cx="98.75" cy="173.56" r="4.5" />
+    <circle cx="77.5" cy="164.09" r="4.5" />
+    <circle cx="86.0" cy="164.09" r="4.5" />
+    <circle cx="94.5" cy="164.09" r="4.5" />
+    <circle cx="86.0" cy="154.62" r="4.5" />
+    <circle cx="86.0" cy="145.17" r="4.5" />
+    <circle cx="86.0" cy="135.71" r="4.5" />
+    <circle cx="86.0" cy="126.24" r="4.5" />
+    <circle cx="86.0" cy="97.85" r="4.5" />
+</g>
+<g
+    fill="#E8384F"
+    fill-opacity="0.75"
+    stroke="#FFFFFF"
+    stroke-width="0.9"
+>
+    <circle cx="178.0" cy="211.41" r="4.5" />
+    <circle cx="178.0" cy="201.94" r="4.5" />
+    <circle cx="178.0" cy="183.03" r="4.5" />
+    <circle cx="173.75" cy="173.56" r="4.5" />
+    <circle cx="182.25" cy="173.56" r="4.5" />
+    <circle cx="156.75" cy="164.09" r="4.5" />
+    <circle cx="165.25" cy="164.09" r="4.5" />
+    <circle cx="173.75" cy="164.09" r="4.5" />
+    <circle cx="182.25" cy="164.09" r="4.5" />
+    <circle cx="190.75" cy="164.09" r="4.5" />
+    <circle cx="199.25" cy="164.09" r="4.5" />
+    <circle cx="169.5" cy="154.62" r="4.5" />
+    <circle cx="178.0" cy="154.62" r="4.5" />
+    <circle cx="186.5" cy="154.62" r="4.5" />
+    <circle cx="156.75" cy="145.17" r="4.5" />
+    <circle cx="165.25" cy="145.17" r="4.5" />
+    <circle cx="173.75" cy="145.17" r="4.5" />
+    <circle cx="182.25" cy="145.17" r="4.5" />
+    <circle cx="190.75" cy="145.17" r="4.5" />
+    <circle cx="199.25" cy="145.17" r="4.5" />
+    <circle cx="165.25" cy="135.71" r="4.5" />
+    <circle cx="173.75" cy="135.71" r="4.5" />
+    <circle cx="182.25" cy="135.71" r="4.5" />
+    <circle cx="190.75" cy="135.71" r="4.5" />
+    <circle cx="165.25" cy="126.24" r="4.5" />
+    <circle cx="173.75" cy="126.24" r="4.5" />
+    <circle cx="182.25" cy="126.24" r="4.5" />
+    <circle cx="190.75" cy="126.24" r="4.5" />
+    <circle cx="165.25" cy="116.77" r="4.5" />
+    <circle cx="173.75" cy="116.77" r="4.5" />
+    <circle cx="182.25" cy="116.77" r="4.5" />
+    <circle cx="190.75" cy="116.77" r="4.5" />
+    <circle cx="178.0" cy="107.32" r="4.5" />
+</g>
+<g
+    fill="#6B4E9B"
+    fill-opacity="0.75"
+    stroke="#FFFFFF"
+    stroke-width="0.9"
+>
+    <circle cx="270.0" cy="239.8" r="4.5" />
+    <circle cx="270.0" cy="235.07" r="4.5" />
+    <circle cx="270.0" cy="206.67" r="4.5" />
+    <circle cx="270.0" cy="154.62" r="4.5" />
+    <circle cx="270.0" cy="97.85" r="4.5" />
+</g>
+<g
+    fill="#6B4E9B"
+    fill-opacity="0.75"
+    stroke="#FFFFFF"
+    stroke-width="0.9"
+>
+    <circle cx="362.0" cy="296.58" r="4.5" />
+    <circle cx="362.0" cy="216.13" r="4.5" />
+    <circle cx="362.0" cy="201.94" r="4.5" />
+    <circle cx="362.0" cy="121.51" r="4.5" />
+    <circle cx="362.0" cy="78.92" r="4.5" />
+</g>
+<text
+    x="86"
+    y="335.5"
+    text-anchor="middle"
+    font-size="15"
+    font-weight="700"
+    fill="#3A3A3A"
+>
+    G1
+</text>
+<text
+    x="86"
+    y="351.5"
+    text-anchor="middle"
+    font-size="13"
+    fill="#6B6B6B"
+>
+    rodzice
+</text>
+<text
+    x="178"
+    y="335.5"
+    text-anchor="middle"
+    font-size="15"
+    font-weight="700"
+    fill="#3A3A3A"
+>
+    G4
+</text>
+<text
+    x="178"
+    y="351.5"
+    text-anchor="middle"
+    font-size="13"
+    fill="#6B6B6B"
+>
+    persony
+</text>
+<text
+    x="270"
+    y="335.5"
+    text-anchor="middle"
+    font-size="15"
+    font-weight="700"
+    fill="#3A3A3A"
+>
+    wersje
+</text>
+<text
+    x="270"
+    y="351.5"
+    text-anchor="middle"
+    font-size="13"
+    fill="#6B6B6B"
+>
+    okoliczności
+</text>
+<text
+    x="362"
+    y="335.5"
+    text-anchor="middle"
+    font-size="15"
+    font-weight="700"
+    fill="#3A3A3A"
+>
+    wersje
+</text>
+<text
+    x="362"
+    y="351.5"
+    text-anchor="middle"
+    font-size="13"
+    fill="#6B6B6B"
+>
+    stan
+</text>
+<g stroke="#E4E4E7" stroke-width="1.6">
+    <line
+        x1="463"
+        y1="315.5"
+        x2="830"
+        y2="315.5"
+        stroke="#C9C9CE"
+        stroke-width="2.4"
+    />
+    <line
+        x1="463"
+        y1="230.33"
+        x2="830"
+        y2="230.33"
+    />
+    <line
+        x1="463"
+        y1="145.17"
+        x2="830"
+        y2="145.17"
+    />
+    <line x1="463" y1="60" x2="830" y2="60" />
+</g>
+<g
+    font-size="15"
+    fill="#6B6B6B"
+    text-anchor="end"
+>
+    <text x="453" y="321">8</text>
+    <text x="453" y="235.83">24</text>
+    <text x="453" y="150.67">40</text>
+    <text x="453" y="65.5">56</text>
+</g>
+
+<g
+    fill="#2563C9"
+    fill-opacity="0.75"
+    stroke="#FFFFFF"
+    stroke-width="0.9"
+>
+    <circle cx="509.0" cy="240.98" r="4.5" />
+    <circle cx="509.0" cy="225.01" r="4.5" />
+    <circle cx="509.0" cy="214.37" r="4.5" />
+    <circle cx="509.0" cy="182.43" r="4.5" />
+    <circle cx="509.0" cy="171.79" r="4.5" />
+    <circle cx="509.0" cy="155.81" r="4.5" />
+    <circle cx="500.5" cy="145.17" r="4.5" />
+    <circle cx="509.0" cy="145.17" r="4.5" />
+    <circle cx="517.5" cy="145.17" r="4.5" />
+    <circle cx="504.75" cy="139.84" r="4.5" />
+    <circle cx="513.25" cy="139.84" r="4.5" />
+    <circle cx="509.0" cy="129.19" r="4.5" />
+    <circle cx="500.5" cy="123.88" r="4.5" />
+    <circle cx="509.0" cy="123.88" r="4.5" />
+    <circle cx="517.5" cy="123.88" r="4.5" />
+    <circle cx="504.75" cy="118.55" r="4.5" />
+    <circle cx="513.25" cy="118.55" r="4.5" />
+    <circle cx="509.0" cy="113.23" r="4.5" />
+    <circle cx="500.5" cy="107.91" r="4.5" />
+    <circle cx="509.0" cy="107.91" r="4.5" />
+    <circle cx="517.5" cy="107.91" r="4.5" />
+    <circle cx="509.0" cy="102.58" r="4.5" />
+    <circle cx="500.5" cy="91.94" r="4.5" />
+    <circle cx="509.0" cy="91.94" r="4.5" />
+    <circle cx="517.5" cy="91.94" r="4.5" />
+    <circle cx="504.75" cy="81.3" r="4.5" />
+    <circle cx="513.25" cy="81.3" r="4.5" />
+    <circle cx="500.5" cy="70.64" r="4.5" />
+    <circle cx="509.0" cy="70.64" r="4.5" />
+    <circle cx="517.5" cy="70.64" r="4.5" />
+    <circle cx="509.0" cy="65.32" r="4.5" />
+    <circle cx="504.75" cy="60" r="4.5" />
+    <circle cx="513.25" cy="60" r="4.5" />
+</g>
+<g
+    fill="#E8384F"
+    fill-opacity="0.75"
+    stroke="#FFFFFF"
+    stroke-width="0.9"
+>
+    <circle cx="596.75" cy="203.71" r="4.5" />
+    <circle cx="605.25" cy="203.71" r="4.5" />
+    <circle cx="601.0" cy="198.39" r="4.5" />
+    <circle cx="596.75" cy="193.07" r="4.5" />
+    <circle cx="605.25" cy="193.07" r="4.5" />
+    <circle cx="601.0" cy="187.75" r="4.5" />
+    <circle cx="592.5" cy="182.43" r="4.5" />
+    <circle cx="601.0" cy="182.43" r="4.5" />
+    <circle cx="609.5" cy="182.43" r="4.5" />
+    <circle cx="596.75" cy="177.11" r="4.5" />
+    <circle cx="605.25" cy="177.11" r="4.5" />
+    <circle cx="588.25" cy="171.79" r="4.5" />
+    <circle cx="596.75" cy="171.79" r="4.5" />
+    <circle cx="605.25" cy="171.79" r="4.5" />
+    <circle cx="613.75" cy="171.79" r="4.5" />
+    <circle cx="596.75" cy="166.45" r="4.5" />
+    <circle cx="605.25" cy="166.45" r="4.5" />
+    <circle cx="601.0" cy="161.13" r="4.5" />
+    <circle cx="579.75" cy="155.81" r="4.5" />
+    <circle cx="588.25" cy="155.81" r="4.5" />
+    <circle cx="596.75" cy="155.81" r="4.5" />
+    <circle cx="605.25" cy="155.81" r="4.5" />
+    <circle cx="613.75" cy="155.81" r="4.5" />
+    <circle cx="622.25" cy="155.81" r="4.5" />
+    <circle cx="596.75" cy="150.49" r="4.5" />
+    <circle cx="605.25" cy="150.49" r="4.5" />
+    <circle cx="584.0" cy="145.17" r="4.5" />
+    <circle cx="592.5" cy="145.17" r="4.5" />
+    <circle cx="601.0" cy="145.17" r="4.5" />
+    <circle cx="609.5" cy="145.17" r="4.5" />
+    <circle cx="618.0" cy="145.17" r="4.5" />
+    <circle cx="596.75" cy="134.51" r="4.5" />
+    <circle cx="605.25" cy="134.51" r="4.5" />
+</g>
+<g
+    fill="#6B4E9B"
+    fill-opacity="0.75"
+    stroke="#FFFFFF"
+    stroke-width="0.9"
+>
+    <circle cx="693.0" cy="222.35" r="4.5" />
+    <circle cx="693.0" cy="177.11" r="4.5" />
+    <circle cx="693.0" cy="139.84" r="4.5" />
+    <circle cx="693.0" cy="126.53" r="4.5" />
+    <circle cx="693.0" cy="110.58" r="4.5" />
+</g>
+<g
+    fill="#6B4E9B"
+    fill-opacity="0.75"
+    stroke="#FFFFFF"
+    stroke-width="0.9"
+>
+    <circle cx="785.0" cy="256.94" r="4.5" />
+    <circle cx="785.0" cy="217.03" r="4.5" />
+    <circle cx="785.0" cy="171.79" r="4.5" />
+    <circle cx="785.0" cy="118.55" r="4.5" />
+    <circle cx="785.0" cy="75.96" r="4.5" />
+</g>
+<text
+    x="509"
+    y="335.5"
+    text-anchor="middle"
+    font-size="15"
+    font-weight="700"
+    fill="#3A3A3A"
+>
+    G1
+</text>
+<text
+    x="509"
+    y="351.5"
+    text-anchor="middle"
+    font-size="13"
+    fill="#6B6B6B"
+>
+    rodzice
+</text>
+<text
+    x="601"
+    y="335.5"
+    text-anchor="middle"
+    font-size="15"
+    font-weight="700"
+    fill="#3A3A3A"
+>
+    G4
+</text>
+<text
+    x="601"
+    y="351.5"
+    text-anchor="middle"
+    font-size="13"
+    fill="#6B6B6B"
+>
+    persony
+</text>
+<text
+    x="693"
+    y="335.5"
+    text-anchor="middle"
+    font-size="15"
+    font-weight="700"
+    fill="#3A3A3A"
+>
+    wersje
+</text>
+<text
+    x="693"
+    y="351.5"
+    text-anchor="middle"
+    font-size="13"
+    fill="#6B6B6B"
+>
+    okoliczności
+</text>
+<text
+    x="785"
+    y="335.5"
+    text-anchor="middle"
+    font-size="15"
+    font-weight="700"
+    fill="#3A3A3A"
+>
+    wersje
+</text>
+<text
+    x="785"
+    y="351.5"
+    text-anchor="middle"
+    font-size="13"
+    fill="#6B6B6B"
+>
+    stan
+</text>
+<g stroke="#E4E4E7" stroke-width="1.6">
+    <line
+        x1="886"
+        y1="315.5"
+        x2="1253"
+        y2="315.5"
+        stroke="#C9C9CE"
+        stroke-width="2.4"
+    />
+    <line
+        x1="886"
+        y1="251.62"
+        x2="1253"
+        y2="251.62"
+    />
+    <line
+        x1="886"
+        y1="187.75"
+        x2="1253"
+        y2="187.75"
+    />
+    <line
+        x1="886"
+        y1="123.88"
+        x2="1253"
+        y2="123.88"
+    />
+    <line x1="886" y1="60" x2="1253" y2="60" />
+</g>
+<g
+    font-size="15"
+    fill="#6B6B6B"
+    text-anchor="end"
+>
+    <text x="876" y="321">1</text>
+    <text x="876" y="257.12">2</text>
+    <text x="876" y="193.25">3</text>
+    <text x="876" y="129.38">4</text>
+    <text x="876" y="65.5">5</text>
+</g>
+<g
+    fill="#2563C9"
+    fill-opacity="0.75"
+    stroke="#FFFFFF"
+    stroke-width="0.9"
+>
+    <circle cx="932.0" cy="251.62" r="4.5" />
+    <circle cx="927.75" cy="238.85" r="4.5" />
+    <circle cx="936.25" cy="238.85" r="4.5" />
+    <circle cx="927.75" cy="226.08" r="4.5" />
+    <circle cx="936.25" cy="226.08" r="4.5" />
+    <circle cx="927.75" cy="200.53" r="4.5" />
+    <circle cx="936.25" cy="200.53" r="4.5" />
+    <circle cx="927.75" cy="187.75" r="4.5" />
+    <circle cx="936.25" cy="187.75" r="4.5" />
+    <circle cx="919.25" cy="174.98" r="4.5" />
+    <circle cx="927.75" cy="174.98" r="4.5" />
+    <circle cx="936.25" cy="174.98" r="4.5" />
+    <circle cx="944.75" cy="174.98" r="4.5" />
+    <circle cx="927.75" cy="162.2" r="4.5" />
+    <circle cx="936.25" cy="162.2" r="4.5" />
+    <circle cx="932.0" cy="149.42" r="4.5" />
+    <circle cx="927.75" cy="136.65" r="4.5" />
+    <circle cx="936.25" cy="136.65" r="4.5" />
+    <circle cx="919.25" cy="123.88" r="4.5" />
+    <circle cx="927.75" cy="123.88" r="4.5" />
+    <circle cx="936.25" cy="123.88" r="4.5" />
+    <circle cx="944.75" cy="123.88" r="4.5" />
+    <circle cx="919.25" cy="111.1" r="4.5" />
+    <circle cx="927.75" cy="111.1" r="4.5" />
+    <circle cx="936.25" cy="111.1" r="4.5" />
+    <circle cx="944.75" cy="111.1" r="4.5" />
+    <circle cx="927.75" cy="98.33" r="4.5" />
+    <circle cx="936.25" cy="98.33" r="4.5" />
+    <circle cx="932.0" cy="85.55" r="4.5" />
+    <circle cx="919.25" cy="60" r="4.5" />
+    <circle cx="927.75" cy="60" r="4.5" />
+    <circle cx="936.25" cy="60" r="4.5" />
+    <circle cx="944.75" cy="60" r="4.5" />
+</g>
+<g
+    fill="#E8384F"
+    fill-opacity="0.75"
+    stroke="#FFFFFF"
+    stroke-width="0.9"
+>
+    <circle cx="1024.0" cy="187.75" r="4.5" />
+    <circle cx="994.25" cy="174.98" r="4.5" />
+    <circle cx="1002.75" cy="174.98" r="4.5" />
+    <circle cx="1011.25" cy="174.98" r="4.5" />
+    <circle cx="1019.75" cy="174.98" r="4.5" />
+    <circle cx="1028.25" cy="174.98" r="4.5" />
+    <circle cx="1036.75" cy="174.98" r="4.5" />
+    <circle cx="1045.25" cy="174.98" r="4.5" />
+    <circle cx="1053.75" cy="174.98" r="4.5" />
+    <circle cx="994.25" cy="162.2" r="4.5" />
+    <circle cx="1002.75" cy="162.2" r="4.5" />
+    <circle cx="1011.25" cy="162.2" r="4.5" />
+    <circle cx="1019.75" cy="162.2" r="4.5" />
+    <circle cx="1028.25" cy="162.2" r="4.5" />
+    <circle cx="1036.75" cy="162.2" r="4.5" />
+    <circle cx="1045.25" cy="162.2" r="4.5" />
+    <circle cx="1053.75" cy="162.2" r="4.5" />
+    <circle cx="998.5" cy="154.33" r="4.5" />
+    <circle cx="1007.0" cy="154.33" r="4.5" />
+    <circle cx="1015.5" cy="154.33" r="4.5" />
+    <circle cx="1024.0" cy="154.33" r="4.5" />
+    <circle cx="1032.5" cy="154.33" r="4.5" />
+    <circle cx="1041.0" cy="154.33" r="4.5" />
+    <circle cx="1049.5" cy="154.33" r="4.5" />
+    <circle cx="1007.0" cy="149.42" r="4.5" />
+    <circle cx="1015.5" cy="149.42" r="4.5" />
+    <circle cx="1024.0" cy="149.42" r="4.5" />
+    <circle cx="1032.5" cy="149.42" r="4.5" />
+    <circle cx="1041.0" cy="149.42" r="4.5" />
+    <circle cx="1011.25" cy="141.55" r="4.5" />
+    <circle cx="1019.75" cy="141.55" r="4.5" />
+    <circle cx="1028.25" cy="141.55" r="4.5" />
+    <circle cx="1036.75" cy="141.55" r="4.5" />
+</g>
+<g
+    fill="#6B4E9B"
+    fill-opacity="0.75"
+    stroke="#FFFFFF"
+    stroke-width="0.9"
+>
+    <circle cx="1116.0" cy="200.53" r="4.5" />
+    <circle cx="1116.0" cy="194.14" r="4.5" />
+    <circle cx="1116.0" cy="149.42" r="4.5" />
+    <circle cx="1116.0" cy="143.04" r="4.5" />
+    <circle cx="1116.0" cy="136.65" r="4.5" />
+</g>
+<g
+    fill="#6B4E9B"
+    fill-opacity="0.75"
+    stroke="#FFFFFF"
+    stroke-width="0.9"
+>
+    <circle cx="1208.0" cy="315.5" r="4.5" />
+    <circle cx="1208.0" cy="251.62" r="4.5" />
+    <circle cx="1208.0" cy="187.75" r="4.5" />
+    <circle cx="1208.0" cy="136.65" r="4.5" />
+    <circle cx="1208.0" cy="72.77" r="4.5" />
+</g>
+<text
+    x="932"
+    y="335.5"
+    text-anchor="middle"
+    font-size="15"
+    font-weight="700"
+    fill="#3A3A3A"
+>
+    G1
+</text>
+<text
+    x="932"
+    y="351.5"
+    text-anchor="middle"
+    font-size="13"
+    fill="#6B6B6B"
+>
+    rodzice
+</text>
+<text
+    x="1024"
+    y="335.5"
+    text-anchor="middle"
+    font-size="15"
+    font-weight="700"
+    fill="#3A3A3A"
+>
+    G4
+</text>
+<text
+    x="1024"
+    y="351.5"
+    text-anchor="middle"
+    font-size="13"
+    fill="#6B6B6B"
+>
+    persony
+</text>
+<text
+    x="1116"
+    y="335.5"
+    text-anchor="middle"
+    font-size="15"
+    font-weight="700"
+    fill="#3A3A3A"
+>
+    wersje
+</text>
+<text
+    x="1116"
+    y="351.5"
+    text-anchor="middle"
+    font-size="13"
+    fill="#6B6B6B"
+>
+    okoliczności
+</text>
+<text
+    x="1208"
+    y="335.5"
+    text-anchor="middle"
+    font-size="15"
+    font-weight="700"
+    fill="#3A3A3A"
+>
+    wersje
+</text>
+<text
+    x="1208"
+    y="351.5"
+    text-anchor="middle"
+    font-size="13"
+    fill="#6B6B6B"
+>
+    stan
+</text>
+<g stroke="#E4E4E7" stroke-width="1.6">
+    <line
+        x1="1309"
+        y1="315.5"
+        x2="1676"
+        y2="315.5"
+        stroke="#C9C9CE"
+        stroke-width="2.4"
+    />
+    <line
+        x1="1309"
+        y1="251.62"
+        x2="1676"
+        y2="251.62"
+    />
+    <line
+        x1="1309"
+        y1="187.75"
+        x2="1676"
+        y2="187.75"
+    />
+    <line
+        x1="1309"
+        y1="123.88"
+        x2="1676"
+        y2="123.88"
+    />
+    <line x1="1309" y1="60" x2="1676" y2="60" />
+</g>
+<g
+    font-size="15"
+    fill="#6B6B6B"
+    text-anchor="end"
+>
+    <text x="1299" y="321">1</text>
+    <text x="1299" y="257.12">2</text>
+    <text x="1299" y="193.25">3</text>
+    <text x="1299" y="129.38">4</text>
+    <text x="1299" y="65.5">5</text>
+</g>
+<g
+    fill="#2563C9"
+    fill-opacity="0.75"
+    stroke="#FFFFFF"
+    stroke-width="0.9"
+>
+    <circle cx="1355.0" cy="213.3" r="4.5" />
+    <circle cx="1355.0" cy="162.2" r="4.5" />
+    <circle cx="1338.0" cy="149.42" r="4.5" />
+    <circle cx="1346.5" cy="149.42" r="4.5" />
+    <circle cx="1355.0" cy="149.42" r="4.5" />
+    <circle cx="1363.5" cy="149.42" r="4.5" />
+    <circle cx="1372.0" cy="149.42" r="4.5" />
+    <circle cx="1342.25" cy="136.65" r="4.5" />
+    <circle cx="1350.75" cy="136.65" r="4.5" />
+    <circle cx="1359.25" cy="136.65" r="4.5" />
+    <circle cx="1367.75" cy="136.65" r="4.5" />
+    <circle cx="1342.25" cy="123.88" r="4.5" />
+    <circle cx="1350.75" cy="123.88" r="4.5" />
+    <circle cx="1359.25" cy="123.88" r="4.5" />
+    <circle cx="1367.75" cy="123.88" r="4.5" />
+    <circle cx="1350.75" cy="111.1" r="4.5" />
+    <circle cx="1359.25" cy="111.1" r="4.5" />
+    <circle cx="1346.5" cy="98.33" r="4.5" />
+    <circle cx="1355.0" cy="98.33" r="4.5" />
+    <circle cx="1363.5" cy="98.33" r="4.5" />
+    <circle cx="1333.75" cy="85.55" r="4.5" />
+    <circle cx="1342.25" cy="85.55" r="4.5" />
+    <circle cx="1350.75" cy="85.55" r="4.5" />
+    <circle cx="1359.25" cy="85.55" r="4.5" />
+    <circle cx="1367.75" cy="85.55" r="4.5" />
+    <circle cx="1376.25" cy="85.55" r="4.5" />
+    <circle cx="1350.75" cy="72.77" r="4.5" />
+    <circle cx="1359.25" cy="72.77" r="4.5" />
+    <circle cx="1338.0" cy="60" r="4.5" />
+    <circle cx="1346.5" cy="60" r="4.5" />
+    <circle cx="1355.0" cy="60" r="4.5" />
+    <circle cx="1363.5" cy="60" r="4.5" />
+    <circle cx="1372.0" cy="60" r="4.5" />
+</g>
+<g
+    fill="#E8384F"
+    fill-opacity="0.75"
+    stroke="#FFFFFF"
+    stroke-width="0.9"
+>
+    <circle cx="1430.0" cy="149.42" r="4.5" />
+    <circle cx="1438.5" cy="149.42" r="4.5" />
+    <circle cx="1447.0" cy="149.42" r="4.5" />
+    <circle cx="1455.5" cy="149.42" r="4.5" />
+    <circle cx="1464.0" cy="149.42" r="4.5" />
+    <circle cx="1417.25" cy="136.65" r="4.5" />
+    <circle cx="1425.75" cy="136.65" r="4.5" />
+    <circle cx="1434.25" cy="136.65" r="4.5" />
+    <circle cx="1442.75" cy="136.65" r="4.5" />
+    <circle cx="1451.25" cy="136.65" r="4.5" />
+    <circle cx="1459.75" cy="136.65" r="4.5" />
+    <circle cx="1468.25" cy="136.65" r="4.5" />
+    <circle cx="1476.75" cy="136.65" r="4.5" />
+    <circle cx="1417.25" cy="128.77" r="4.5" />
+    <circle cx="1425.75" cy="128.77" r="4.5" />
+    <circle cx="1434.25" cy="128.77" r="4.5" />
+    <circle cx="1442.75" cy="128.77" r="4.5" />
+    <circle cx="1451.25" cy="128.77" r="4.5" />
+    <circle cx="1459.75" cy="128.77" r="4.5" />
+    <circle cx="1468.25" cy="128.77" r="4.5" />
+    <circle cx="1476.75" cy="128.77" r="4.5" />
+    <circle cx="1430.0" cy="123.88" r="4.5" />
+    <circle cx="1438.5" cy="123.88" r="4.5" />
+    <circle cx="1447.0" cy="123.88" r="4.5" />
+    <circle cx="1455.5" cy="123.88" r="4.5" />
+    <circle cx="1464.0" cy="123.88" r="4.5" />
+    <circle cx="1430.0" cy="116" r="4.5" />
+    <circle cx="1438.5" cy="116" r="4.5" />
+    <circle cx="1447.0" cy="116" r="4.5" />
+    <circle cx="1455.5" cy="116" r="4.5" />
+    <circle cx="1464.0" cy="116" r="4.5" />
+    <circle cx="1442.75" cy="111.1" r="4.5" />
+    <circle cx="1451.25" cy="111.1" r="4.5" />
+</g>
+<g
+    fill="#6B4E9B"
+    fill-opacity="0.75"
+    stroke="#FFFFFF"
+    stroke-width="0.9"
+>
+    <circle cx="1534.75" cy="155.81" r="4.5" />
+    <circle cx="1543.25" cy="155.81" r="4.5" />
+    <circle cx="1539.0" cy="149.42" r="4.5" />
+    <circle cx="1539.0" cy="143.04" r="4.5" />
+    <circle cx="1539.0" cy="130.26" r="4.5" />
+</g>
+<g
+    fill="#6B4E9B"
+    fill-opacity="0.75"
+    stroke="#FFFFFF"
+    stroke-width="0.9"
+>
+    <circle cx="1626.75" cy="251.62" r="4.5" />
+    <circle cx="1635.25" cy="251.62" r="4.5" />
+    <circle cx="1631.0" cy="238.85" r="4.5" />
+    <circle cx="1631.0" cy="98.33" r="4.5" />
+    <circle cx="1631.0" cy="72.77" r="4.5" />
+</g>
+<text
+    x="1355"
+    y="335.5"
+    text-anchor="middle"
+    font-size="15"
+    font-weight="700"
+    fill="#3A3A3A"
+>
+    G1
+</text>
+<text
+    x="1355"
+    y="351.5"
+    text-anchor="middle"
+    font-size="13"
+    fill="#6B6B6B"
+>
+    rodzice
+</text>
+<text
+    x="1447"
+    y="335.5"
+    text-anchor="middle"
+    font-size="15"
+    font-weight="700"
+    fill="#3A3A3A"
+>
+    G4
+</text>
+<text
+    x="1447"
+    y="351.5"
+    text-anchor="middle"
+    font-size="13"
+    fill="#6B6B6B"
+>
+    persony
+</text>
+<text
+    x="1539"
+    y="335.5"
+    text-anchor="middle"
+    font-size="15"
+    font-weight="700"
+    fill="#3A3A3A"
+>
+    wersje
+</text>
+<text
+    x="1539"
+    y="351.5"
+    text-anchor="middle"
+    font-size="13"
+    fill="#6B6B6B"
+>
+    okoliczności
+</text>
+<text
+    x="1631"
+    y="335.5"
+    text-anchor="middle"
+    font-size="15"
+    font-weight="700"
+    fill="#3A3A3A"
+>
+    wersje
+</text>
+<text
+    x="1631"
+    y="351.5"
+    text-anchor="middle"
+    font-size="13"
+    fill="#6B6B6B"
+>
+    stan
+</text>
+<g stroke="#E4E4E7" stroke-width="1.6">
+    <line
+        x1="1732"
+        y1="315.5"
+        x2="2099"
+        y2="315.5"
+        stroke="#C9C9CE"
+        stroke-width="2.4"
+    />
+    <line
+        x1="1732"
+        y1="251.62"
+        x2="2099"
+        y2="251.62"
+    />
+    <line
+        x1="1732"
+        y1="187.75"
+        x2="2099"
+        y2="187.75"
+    />
+    <line
+        x1="1732"
+        y1="123.88"
+        x2="2099"
+        y2="123.88"
+    />
+    <line x1="1732" y1="60" x2="2099" y2="60" />
+</g>
+<g
+    font-size="15"
+    fill="#6B6B6B"
+    text-anchor="end"
+>
+    <text x="1722" y="321">1</text>
+    <text x="1722" y="257.12">2</text>
+    <text x="1722" y="193.25">3</text>
+    <text x="1722" y="129.38">4</text>
+    <text x="1722" y="65.5">5</text>
+</g>
+<g
+    fill="#2563C9"
+    fill-opacity="0.75"
+    stroke="#FFFFFF"
+    stroke-width="0.9"
+>
+    <circle cx="1748.25" cy="315.5" r="4.5" />
+    <circle cx="1756.75" cy="315.5" r="4.5" />
+    <circle cx="1765.25" cy="315.5" r="4.5" />
+    <circle cx="1773.75" cy="315.5" r="4.5" />
+    <circle cx="1782.25" cy="315.5" r="4.5" />
+    <circle cx="1790.75" cy="315.5" r="4.5" />
+    <circle cx="1799.25" cy="315.5" r="4.5" />
+    <circle cx="1807.75" cy="315.5" r="4.5" />
+    <circle cx="1748.25" cy="307.62" r="4.5" />
+    <circle cx="1756.75" cy="307.62" r="4.5" />
+    <circle cx="1765.25" cy="307.62" r="4.5" />
+    <circle cx="1773.75" cy="307.62" r="4.5" />
+    <circle cx="1782.25" cy="307.62" r="4.5" />
+    <circle cx="1790.75" cy="307.62" r="4.5" />
+    <circle cx="1799.25" cy="307.62" r="4.5" />
+    <circle cx="1807.75" cy="307.62" r="4.5" />
+    <circle cx="1773.75" cy="294.24" r="4.5" />
+    <circle cx="1782.25" cy="294.24" r="4.5" />
+    <circle cx="1769.5" cy="272.89" r="4.5" />
+    <circle cx="1778.0" cy="272.89" r="4.5" />
+    <circle cx="1786.5" cy="272.89" r="4.5" />
+    <circle cx="1778.0" cy="251.62" r="4.5" />
+    <circle cx="1765.25" cy="230.36" r="4.5" />
+    <circle cx="1773.75" cy="230.36" r="4.5" />
+    <circle cx="1782.25" cy="230.36" r="4.5" />
+    <circle cx="1790.75" cy="230.36" r="4.5" />
+    <circle cx="1778.0" cy="209.01" r="4.5" />
+    <circle cx="1778.0" cy="187.75" r="4.5" />
+    <circle cx="1778.0" cy="166.49" r="4.5" />
+    <circle cx="1778.0" cy="145.14" r="4.5" />
+    <circle cx="1773.75" cy="123.88" r="4.5" />
+    <circle cx="1782.25" cy="123.88" r="4.5" />
+    <circle cx="1778.0" cy="81.26" r="4.5" />
+</g>
+<g
+    fill="#E8384F"
+    fill-opacity="0.75"
+    stroke="#FFFFFF"
+    stroke-width="0.9"
+>
+    <circle cx="1840.25" cy="315.5" r="4.5" />
+    <circle cx="1848.75" cy="315.5" r="4.5" />
+    <circle cx="1857.25" cy="315.5" r="4.5" />
+    <circle cx="1865.75" cy="315.5" r="4.5" />
+    <circle cx="1874.25" cy="315.5" r="4.5" />
+    <circle cx="1882.75" cy="315.5" r="4.5" />
+    <circle cx="1891.25" cy="315.5" r="4.5" />
+    <circle cx="1899.75" cy="315.5" r="4.5" />
+    <circle cx="1840.25" cy="307.62" r="4.5" />
+    <circle cx="1848.75" cy="307.62" r="4.5" />
+    <circle cx="1857.25" cy="307.62" r="4.5" />
+    <circle cx="1865.75" cy="307.62" r="4.5" />
+    <circle cx="1874.25" cy="307.62" r="4.5" />
+    <circle cx="1882.75" cy="307.62" r="4.5" />
+    <circle cx="1891.25" cy="307.62" r="4.5" />
+    <circle cx="1899.75" cy="307.62" r="4.5" />
+    <circle cx="1844.5" cy="299.75" r="4.5" />
+    <circle cx="1853.0" cy="299.75" r="4.5" />
+    <circle cx="1861.5" cy="299.75" r="4.5" />
+    <circle cx="1870.0" cy="299.75" r="4.5" />
+    <circle cx="1878.5" cy="299.75" r="4.5" />
+    <circle cx="1887.0" cy="299.75" r="4.5" />
+    <circle cx="1895.5" cy="299.75" r="4.5" />
+    <circle cx="1844.5" cy="291.88" r="4.5" />
+    <circle cx="1853.0" cy="291.88" r="4.5" />
+    <circle cx="1861.5" cy="291.88" r="4.5" />
+    <circle cx="1870.0" cy="291.88" r="4.5" />
+    <circle cx="1878.5" cy="291.88" r="4.5" />
+    <circle cx="1887.0" cy="291.88" r="4.5" />
+    <circle cx="1895.5" cy="291.88" r="4.5" />
+    <circle cx="1865.75" cy="294.24" r="4.5" />
+    <circle cx="1874.25" cy="294.24" r="4.5" />
+    <circle cx="1870.0" cy="272.89" r="4.5" />
+</g>
+<g
+    fill="#6B4E9B"
+    fill-opacity="0.75"
+    stroke="#FFFFFF"
+    stroke-width="0.9"
+>
+    <circle cx="1957.75" cy="315.5" r="4.5" />
+    <circle cx="1966.25" cy="315.5" r="4.5" />
+    <circle cx="1962.0" cy="294.24" r="4.5" />
+    <circle cx="1962.0" cy="251.62" r="4.5" />
+    <circle cx="1962.0" cy="230.36" r="4.5" />
+</g>
+<g
+    fill="#6B4E9B"
+    fill-opacity="0.75"
+    stroke="#FFFFFF"
+    stroke-width="0.9"
+>
+    <circle cx="2049.75" cy="315.5" r="4.5" />
+    <circle cx="2058.25" cy="315.5" r="4.5" />
+    <circle cx="2054.0" cy="219.69" r="4.5" />
+    <circle cx="2054.0" cy="134.55" r="4.5" />
+    <circle cx="2054.0" cy="60" r="4.5" />
+</g>
+<text
+    x="1778"
+    y="335.5"
+    text-anchor="middle"
+    font-size="15"
+    font-weight="700"
+    fill="#3A3A3A"
+>
+    G1
+</text>
+<text
+    x="1778"
+    y="351.5"
+    text-anchor="middle"
+    font-size="13"
+    fill="#6B6B6B"
+>
+    rodzice
+</text>
+<text
+    x="1870"
+    y="335.5"
+    text-anchor="middle"
+    font-size="15"
+    font-weight="700"
+    fill="#3A3A3A"
+>
+    G4
+</text>
+<text
+    x="1870"
+    y="351.5"
+    text-anchor="middle"
+    font-size="13"
+    fill="#6B6B6B"
+>
+    persony
+</text>
+<text
+    x="1962"
+    y="335.5"
+    text-anchor="middle"
+    font-size="15"
+    font-weight="700"
+    fill="#3A3A3A"
+>
+    wersje
+</text>
+<text
+    x="1962"
+    y="351.5"
+    text-anchor="middle"
+    font-size="13"
+    fill="#6B6B6B"
+>
+    okoliczności
+</text>
+<text
+    x="2054"
+    y="335.5"
+    text-anchor="middle"
+    font-size="15"
+    font-weight="700"
+    fill="#3A3A3A"
+>
+    wersje
+</text>
+<text
+    x="2054"
+    y="351.5"
+    text-anchor="middle"
+    font-size="13"
+    fill="#6B6B6B"
+>
+    stan
+</text>
+</g>
+            </defs>
+        </svg>
+
+        <script>
+            (function () {
+                var belka = document.getElementById("belka");
+                var menuBtn = document.getElementById("menuBtn");
+                var spisLista = document.getElementById("spisLista");
+                var postep = document.getElementById("postep");
+                var doGory = document.getElementById("doGory");
+                var sekcje = [].slice.call(
+                    document.querySelectorAll("main .sekcja")
+                );
+
+                /* spis sekcji budowany z nagłówków */
+                sekcje.forEach(function (s) {
+                    var h = s.querySelector("h2");
+                    var li = document.createElement("li");
+                    var a = document.createElement("a");
+                    a.href = "#" + s.id;
+                    a.innerHTML = h.innerHTML;
+                    a.dataset.cel = s.id;
+                    li.appendChild(a);
+                    spisLista.appendChild(li);
+                });
+                var linki = [].slice.call(spisLista.querySelectorAll("a"));
+
+                function zamknijMenu() {
+                    belka.classList.remove("menu-otwarte");
+                    menuBtn.setAttribute("aria-expanded", "false");
+                }
+                menuBtn.addEventListener("click", function () {
+                    var otwarte = belka.classList.toggle("menu-otwarte");
+                    menuBtn.setAttribute("aria-expanded", String(otwarte));
+                });
+                linki.forEach(function (a) {
+                    a.addEventListener("click", zamknijMenu);
+                });
+                document.addEventListener("keydown", function (e) {
+                    if (e.key === "Escape") zamknijMenu();
+                });
+
+                /* pasek postępu, belka i przycisk powrotu */
+                var tick = false;
+                function naScroll() {
+                    var y = window.scrollY || window.pageYOffset;
+                    var h =
+                        document.documentElement.scrollHeight -
+                        window.innerHeight;
+                    postep.style.width = (h > 0 ? (y / h) * 100 : 0) + "%";
+                    if (y > 240) {
+                        belka.classList.add("widoczna");
+                        doGory.classList.add("widoczny");
+                    } else {
+                        belka.classList.remove("widoczna");
+                        doGory.classList.remove("widoczny");
+                        zamknijMenu();
+                    }
+                    tick = false;
+                }
+                window.addEventListener(
+                    "scroll",
+                    function () {
+                        if (!tick) {
+                            tick = true;
+                            window.requestAnimationFrame(naScroll);
+                        }
+                    },
+                    { passive: true }
+                );
+                naScroll();
+
+                doGory.addEventListener("click", function () {
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                });
+
+                /* odsłanianie sekcji i podświetlanie spisu */
+                if ("IntersectionObserver" in window) {
+                    var ioOdslon = new IntersectionObserver(
+                        function (wpisy) {
+                            wpisy.forEach(function (w) {
+                                if (w.isIntersecting) {
+                                    w.target.classList.add("widoczny");
+                                    ioOdslon.unobserve(w.target);
+                                }
+                            });
+                        },
+                        { rootMargin: "0px 0px -8% 0px", threshold: 0.06 }
+                    );
+                    document
+                        .querySelectorAll(".odslon")
+                        .forEach(function (el) {
+                            ioOdslon.observe(el);
+                        });
+
+                    var ioSpis = new IntersectionObserver(
+                        function (wpisy) {
+                            wpisy.forEach(function (w) {
+                                if (!w.isIntersecting) return;
+                                linki.forEach(function (a) {
+                                    a.classList.toggle(
+                                        "aktywna",
+                                        a.dataset.cel === w.target.id
+                                    );
+                                });
+                            });
+                        },
+                        { rootMargin: "-56px 0px -65% 0px" }
+                    );
+                    sekcje.forEach(function (s) {
+                        ioSpis.observe(s);
+                    });
+                } else {
+                    document
+                        .querySelectorAll(".odslon")
+                        .forEach(function (el) {
+                            el.classList.add("widoczny");
+                        });
+                }
+
+                /* bezpiecznik: treść musi być widoczna nawet bez obserwatora */
+                window.setTimeout(function () {
+                    document
+                        .querySelectorAll(".odslon")
+                        .forEach(function (el) {
+                            el.classList.add("widoczny");
+                        });
+                }, 1800);
+
+                /* legenda wykresu słupkowego */
+                var karta = document.getElementById("wykresSlupki");
+                karta.querySelectorAll(".lg").forEach(function (b) {
+                    b.addEventListener("click", function () {
+                        var wl = b.getAttribute("aria-pressed") === "true";
+                        b.setAttribute("aria-pressed", String(!wl));
+                        karta.classList.toggle("bez-" + b.dataset.grp, wl);
+                    });
+                });
+
+                /* podświetlenie wiersza tabeli */
+                document
+                    .querySelectorAll("#tabMarkery tbody tr")
+                    .forEach(function (tr) {
+                        tr.addEventListener("click", function () {
+                            tr.classList.toggle("zazn");
+                        });
+                    });
+
+                /* powiększanie paneli rozrzutu */
+                var lupa = document.getElementById("lupa");
+                var lupaSvg = document.getElementById("lupaSvg");
+                var lupaTytul = document.getElementById("lupaTytul");
+                var widoki = [
+                    "-10 50 427 310",
+                    "413 50 427 310",
+                    "836 50 427 310",
+                    "1259 50 427 310",
+                    "1682 50 427 310",
+                ];
+                document.querySelectorAll(".panel").forEach(function (p) {
+                    p.addEventListener("click", function () {
+                        if (!lupa.showModal) return;
+                        var i = Number(p.dataset.panel);
+                        lupaSvg.setAttribute("viewBox", widoki[i]);
+                        lupaTytul.textContent =
+                            p.querySelector("h4").textContent;
+                        lupa.showModal();
+                    });
+                });
+                document
+                    .getElementById("lupaZamknij")
+                    .addEventListener("click", function () {
+                        lupa.close();
+                    });
+                lupa.addEventListener("click", function (e) {
+                    if (e.target === lupa) lupa.close();
+                });
+            })();
+        </script>
+    </body>
+</html>
